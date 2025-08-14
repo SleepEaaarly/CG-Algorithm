@@ -1,0 +1,5 @@
+.vscode
+build/*
+bin/main.exe
+bin/Release/*
+bin/Debug/*
