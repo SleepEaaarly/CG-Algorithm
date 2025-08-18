@@ -7,69 +7,78 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "shader.h"
+#include "texture.h"
 
 #include <string>
 #include <vector>
-using namespace std;
-
-#define MAX_BONE_INFLUENCE 4
+#include <memory>
 
 struct Vertex {
-    glm::vec3 Position;
-    glm::vec3 Normal;
-    glm::vec2 TexCoords;
-    glm::vec3 Tangent;
-    glm::vec3 Bitangent;
-
-    int m_BoneIDs[MAX_BONE_INFLUENCE];
-    float m_Weights[MAX_BONE_INFLUENCE];
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec2 tex_coords;
+    glm::vec3 tangent;
 };
 
-struct Texture {
-    unsigned int id;
-    string type;
-    aiString path;
-};
+class Texture;
 
 class Mesh {
     public:
-        vector<Vertex> vertices;
-        vector<unsigned int> indices;
-        vector<Texture> textures;
+        std::vector<Vertex> vertices;
+        std::vector<unsigned int> indices;
+        std::vector<std::shared_ptr<Texture>> textures;
+
         unsigned int VAO;
 
         // constructor
-        Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures) {
+        Mesh(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, std::vector<std::shared_ptr<Texture>>& textures) {
             this->vertices = vertices;
             this->indices = indices;
             this->textures = textures;
-
             setupMesh();
         }
 
-        void Draw(Shader shader) {
-            unsigned int diffuseNr = 1;
-            unsigned int specularNr = 1;
-            unsigned int normalNr = 1;
-            unsigned int heightNr = 1;
+        void addTexture(std::shared_ptr<Texture> tex) {
+            textures.push_back(tex);
+        }
+
+        void draw(Shader shader) {
+            unsigned int albedo_num = 1;
+            unsigned int metallic_num = 1;
+            unsigned int normal_num = 1;
+            unsigned int roughness_num = 1;
             for (int i = 0; i < textures.size(); i++) {
                 glActiveTexture(GL_TEXTURE0 + i);   // 绑定纹理对象前激活对应的纹理单元 g_obj[unit][object]
                 // 获取纹理编号
-                string number;
-                string name = textures[i].type;
-                if (name == "texture_diffuse") {
-                    number = to_string(diffuseNr++);
-                } else if (name == "texture_specular") {
-                    number = to_string(specularNr++);
-                } else if (name == "texture_normal") {
-                    number = to_string(normalNr++);
-                } else if (name == "texture_height") {
-                    number = to_string(heightNr++);
+                std::string number;
+                std::string name;
+                auto tex = textures[i];
+                switch (tex->getType()) {
+                    case Texture::Type::Albedo:
+                        name = "albedo_map";
+                        number = std::to_string(albedo_num++);
+                        break;
+                    case Texture::Type::Metallic:
+                        name = "metallic_map";
+                        number = std::to_string(metallic_num++);
+                        break;
+                    case Texture::Type::Normal:
+                        name = "normal_map";
+                        number = std::to_string(normal_num++);
+                        break;
+                    case Texture::Type::Roughness:
+                        name = "roughness_map";
+                        number = std::to_string(roughness_num++);
+                        break;
+                    default:
+                        break;
                 }
+
+                assert(!name.empty());
 
                 shader.setInt((name + number).c_str(), i);
                 // 将shader中的 sampler 绑定对应的纹理单元(texture_unit)
-                glBindTexture(GL_TEXTURE_2D, textures[i].id);   // 绑定纹理对象 GL_TEXTURE_2D
+                glBindTexture(GL_TEXTURE_2D, textures[i]->getId());   // 绑定纹理对象 GL_TEXTURE_2D
             }
 
             // draw mesh
@@ -97,16 +106,19 @@ class Mesh {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
-            // 顶点位置
+            // position
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-            // 顶点法线
+            // normal
             glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
-            // 顶点纹理坐标
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+            // tex coord
             glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
-
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
+            // tangent
+            glEnableVertexAttribArray(3);
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+            
             glBindVertexArray(0);
         }
 };
