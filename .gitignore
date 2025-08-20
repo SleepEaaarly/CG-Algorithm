@@ -3,3 +3,4 @@ build/*
 bin/main.exe
 bin/Release/*
 bin/Debug/*
+bin/*.pdb
