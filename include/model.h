@@ -21,15 +21,6 @@
 #include <vector>
 #include <cassert>
 
-void PrintMaterialTextureTypes(const aiMaterial* material) {
-    for (int type = aiTextureType_NONE + 1; type <= AI_TEXTURE_TYPE_MAX; ++type) {
-        unsigned int count = material->GetTextureCount((aiTextureType)type);
-        if (count > 0) {
-            std::cout << "Texture type: " << type << ", count: " << count << std::endl;
-        }
-    }
-}
-
 class Model {
 public:
     std::vector<std::shared_ptr<Texture>> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
@@ -103,6 +94,16 @@ private:
             processNode(node->mChildren[i], scene);
         }
     }
+
+    static void PrintMaterialTextureTypes(const aiMaterial* material) {
+        for (int type = aiTextureType_NONE + 1; type <= AI_TEXTURE_TYPE_MAX; ++type) {
+            unsigned int count = material->GetTextureCount((aiTextureType)type);
+            if (count > 0) {
+                std::cout << "Texture type: " << type << ", count: " << count << std::endl;
+            }
+        }
+    }
+
 
     Mesh processMesh(aiMesh *mesh, const aiScene *scene) {
         // data to fill
@@ -187,7 +188,7 @@ private:
             mat->GetTexture(assimp_type, i, &str);
             // check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
             bool skip = false;
-            int sz = textures_loaded.size();
+            size_t sz = textures_loaded.size();
             for (unsigned int j = 0; j < sz; j++) {   
                 if(std::strcmp(textures_loaded[j]->getPath().c_str(), str.C_Str()) == 0) {
                     textures.push_back(textures_loaded[j]);
