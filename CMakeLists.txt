@@ -13,7 +13,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 add_subdirectory(lib/glad)
 
 # 查找源文件
-file(GLOB SRC_FILES src/main.cpp include/*.cpp)
+file(GLOB SRC_FILES src/pbr.cpp include/*.cpp)
 
 # 添加可执行文件
 add_executable(main ${SRC_FILES})

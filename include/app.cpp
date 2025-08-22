@@ -111,6 +111,11 @@ void App::init(unsigned int width, unsigned int height,
 
 void App::run() {
     ResourceManager::getInstance().initResources();
+
+    for (auto pre_pass : ResourceManager::getInstance().getAllPreRenderPasses()) {
+        pre_pass->render();
+    }
+
     while (!glfwWindowShouldClose(window)) {
         // per-frame time logic
         // --------------------
@@ -134,7 +139,9 @@ void App::run() {
         }
 
         // render all
-        ResourceManager::getInstance().render();
+        for (auto pass : ResourceManager::getInstance().getAllRenderPasses()) {
+            pass->render();
+        }
 
         // swap buffers and poll IO events (keys pressed/released, mouse moved
         // etc.)

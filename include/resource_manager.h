@@ -20,20 +20,28 @@ public:
 
     void registerGameObject(const std::string& name, std::shared_ptr<IGameObject> obj);
 
+    // Register a render pass that will be executed before the main render pass
+    // This is useful for passes that need to set up the scene before the main rendering.
+    void registerPreRenderPass(const std::string& name, std::shared_ptr<IRenderPass> pass);
+
+    // Must register render pass in the order of rendering
+    // e.g. skybox pass first, then PBR pass, etc.
+    // This is to ensure that the render passes are executed in the correct order.
     void registerRenderPass(const std::string& name, std::shared_ptr<IRenderPass> pass);
     
     void initResources();
 
     std::vector<std::shared_ptr<IGameObject>>& getAllGameObjects();
 
+    std::vector<std::shared_ptr<IRenderPass>>& getAllPreRenderPasses();
+
     std::vector<std::shared_ptr<IRenderPass>>& getAllRenderPasses();
 
     std::shared_ptr<IGameObject> getGameObject(const std::string& name);
 
-    void render();
-
 private:
     std::vector<std::shared_ptr<IGameObject>> gameObjects;
+    std::vector<std::shared_ptr<IRenderPass>> preRenderPasses;
     std::vector<std::shared_ptr<IRenderPass>> renderPasses;
     std::unordered_map<std::string, std::shared_ptr<IGameObject>> gameObjects_map;
     Camera main_camera = glm::vec3(0.0f, 0.0f, 3.0f);

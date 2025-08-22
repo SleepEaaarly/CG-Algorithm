@@ -3,6 +3,7 @@
 #include "game_object.h"
 #include "light.h"
 #include "render_pass.h"
+#include <stdexcept>
 
 Camera &ResourceManager::getMainCamera() { return main_camera; }
 
@@ -10,6 +11,10 @@ void ResourceManager::registerGameObject(const std::string &name,
                                          std::shared_ptr<IGameObject> obj) {
     gameObjects_map[name] = obj;
     gameObjects.push_back(obj);
+}
+
+void ResourceManager::registerPreRenderPass(const std::string& name, std::shared_ptr<IRenderPass> pass) {
+    preRenderPasses.push_back(pass);
 }
 
 void ResourceManager::registerRenderPass(const std::string &name,
@@ -26,6 +31,10 @@ void ResourceManager::initResources() {
     }
 }
 
+std::vector<std::shared_ptr<IRenderPass>>& ResourceManager::getAllPreRenderPasses() {
+    return preRenderPasses;
+}
+
 std::vector<std::shared_ptr<IGameObject>> &ResourceManager::getAllGameObjects() {
     return gameObjects;
 }
@@ -38,12 +47,7 @@ std::shared_ptr<IGameObject> ResourceManager::getGameObject(const std::string &n
     auto it = gameObjects_map.find(name);
     if (it == gameObjects_map.end()) {
         throw std::out_of_range("GameObject not found: " + name);
+        return nullptr; // This line is unreachable but added to avoid compiler warning
     }
     return it->second;
-}
-
-void ResourceManager::render() {
-    for (auto pass : renderPasses) {
-        pass->render();
-    }
 }
