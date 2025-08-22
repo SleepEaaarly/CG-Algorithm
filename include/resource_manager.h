@@ -11,6 +11,8 @@
 class IGameObject;
 class IRenderPass;
 class Light;
+class Texture2D;
+class Framebuffer;
 
 class ResourceManager : public Singleton<ResourceManager> {
     friend class Singleton<ResourceManager>;
@@ -29,6 +31,14 @@ public:
     // This is to ensure that the render passes are executed in the correct order.
     void registerRenderPass(const std::string& name, std::shared_ptr<IRenderPass> pass);
     
+    void registerTexture2D(const std::string& name, std::shared_ptr<Texture2D> texture) {
+        texture2ds[name] = texture;
+    }
+
+    void registerFramebuffer(const std::string& name, std::shared_ptr<Framebuffer> framebuffer) {
+        framebuffers[name] = framebuffer;
+    }
+
     void initResources();
 
     std::vector<std::shared_ptr<IGameObject>>& getAllGameObjects();
@@ -39,11 +49,30 @@ public:
 
     std::shared_ptr<IGameObject> getGameObject(const std::string& name);
 
+    std::shared_ptr<Texture2D> getTexture2D(const std::string& name) {
+        auto it = texture2ds.find(name);
+        if (it != texture2ds.end()) {
+            return it->second;
+        }
+        throw std::out_of_range("Texture2D not found: " + name);
+    }
+
+    std::shared_ptr<Framebuffer> getFramebuffer(const std::string& name) {
+        auto it = framebuffers.find(name);
+        if (it != framebuffers.end()) {
+            return it->second;
+        }
+        throw std::out_of_range("Framebuffer not found: " + name);
+    }
+
 private:
     std::vector<std::shared_ptr<IGameObject>> gameObjects;
     std::vector<std::shared_ptr<IRenderPass>> preRenderPasses;
     std::vector<std::shared_ptr<IRenderPass>> renderPasses;
     std::unordered_map<std::string, std::shared_ptr<IGameObject>> gameObjects_map;
+    std::unordered_map<std::string, std::shared_ptr<Texture2D>> texture2ds;
+    std::unordered_map<std::string, std::shared_ptr<Framebuffer>> framebuffers;
+
     Camera main_camera = glm::vec3(0.0f, 0.0f, 3.0f);
 
     ResourceManager() = default;

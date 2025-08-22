@@ -41,6 +41,9 @@ class Texture2D {
     const Type getType();
 
     const GLint getId();
+
+    const unsigned int getWidth() { return width; }
+    const unsigned int getHeight() { return height; }
 };
 
 class Cubemap {
@@ -59,6 +62,6 @@ class Cubemap {
             GLuint wrap_t = GL_CLAMP_TO_EDGE, GLuint wrap_r = GL_CLAMP_TO_EDGE,
             GLuint filter_min = GL_LINEAR_MIPMAP_LINEAR,
             GLuint filter_max = GL_LINEAR);
-            
+
     ~Cubemap() = default;
 };
