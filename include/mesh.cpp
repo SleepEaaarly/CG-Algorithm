@@ -1,5 +1,6 @@
 #include "mesh.h"
 #include "texture.h"
+#include <iostream>
 
 Mesh::Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices,
            std::vector<std::shared_ptr<Texture2D>> &textures) {
@@ -11,7 +12,7 @@ Mesh::Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices,
 
 void Mesh::addTexture(std::shared_ptr<Texture2D> tex) { textures.push_back(tex); }
 
-void Mesh::draw(Shader& shader) {
+void Mesh::draw(Shader& shader, GLenum mode) {
     unsigned int albedo_num = 1;
     unsigned int metallic_num = 1;
     unsigned int normal_num = 1;
@@ -55,7 +56,7 @@ void Mesh::draw(Shader& shader) {
 
     // draw mesh
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(mode, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
     // always good practice to set everything back to defaults once

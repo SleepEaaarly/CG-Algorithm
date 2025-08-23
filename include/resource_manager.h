@@ -49,21 +49,9 @@ public:
 
     std::shared_ptr<IGameObject> getGameObject(const std::string& name);
 
-    std::shared_ptr<Texture2D> getTexture2D(const std::string& name) {
-        auto it = texture2ds.find(name);
-        if (it != texture2ds.end()) {
-            return it->second;
-        }
-        throw std::out_of_range("Texture2D not found: " + name);
-    }
+    std::shared_ptr<Texture2D> getTexture2D(const std::string& name);
 
-    std::shared_ptr<Framebuffer> getFramebuffer(const std::string& name) {
-        auto it = framebuffers.find(name);
-        if (it != framebuffers.end()) {
-            return it->second;
-        }
-        throw std::out_of_range("Framebuffer not found: " + name);
-    }
+    std::shared_ptr<Framebuffer> getFramebuffer(const std::string& name);
 
 private:
     std::vector<std::shared_ptr<IGameObject>> gameObjects;

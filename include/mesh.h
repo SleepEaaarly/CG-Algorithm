@@ -32,7 +32,7 @@ class Mesh {
 
     void addTexture(std::shared_ptr<Texture2D> tex);
 
-    void draw(Shader& shader);
+    void draw(Shader& shader, GLenum mode = GL_TRIANGLES);
 
   private:
     unsigned int VBO, EBO;

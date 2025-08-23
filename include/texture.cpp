@@ -17,7 +17,7 @@ Texture2D::Texture2D(int width, int height, GLenum internal_format,
 Texture2D::Texture2D(const std::string &path, Type type, GLenum internal_format,
                      GLenum image_format, GLenum data_type, GLuint wrap_s,
                      GLuint wrap_t, GLuint filter_min, GLuint filter_max)
-    : Texture2D(0, 0, internal_format, image_format, wrap_s, wrap_t, filter_min,
+    : Texture2D(0, 0, internal_format, image_format, data_type, wrap_s, wrap_t, filter_min,
                 filter_max, type) {
     this->path = path;
     loadTextureFromFile(path);

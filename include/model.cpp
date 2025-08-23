@@ -1,9 +1,67 @@
 #include "model.h"
 #include <iostream>
+#include <cassert>
 
+Model::Model(Model::Type type, bool gamma) : type(type), gammaCorrection(gamma) {
+    if (type == Model::Type::SPHERE)
+        buildSphereMesh();
+    else assert(false && "No other models you could use in this constructor");
+}
+
+void Model::buildSphereMesh(unsigned int xSegments, unsigned int ySegments) {
+    const float PI = 3.14159265359f;
+
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    // 1. 生成顶点
+    for (unsigned int y = 0; y <= ySegments; ++y) {
+        float ySegment = (float)y / ySegments;
+        float yPos = std::cos(ySegment * PI);               // 1 -> -1
+
+        for (unsigned int x = 0; x <= xSegments; ++x) {
+            float xSegment = (float)x / xSegments;
+            float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+            float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+
+            Vertex v;
+            v.position  = glm::vec3(xPos, yPos, zPos);
+            v.normal    = glm::normalize(v.position);       // 球心在原点
+            v.tex_coords  = glm::vec2(xSegment, ySegment);
+
+            // 计算切线（沿经度方向）
+            glm::vec3 bitangent = glm::normalize(glm::cross(v.normal, glm::vec3(0.0f, 1.0f, 0.0f)));
+            if (glm::length(bitangent) < 0.01f)             // 极点
+                bitangent = glm::vec3(1.0f, 0.0f, 0.0f);
+            v.tangent = glm::normalize(glm::cross(bitangent, v.normal));
+
+            vertices.push_back(v);
+        }
+    }
+
+    // 2. 生成三角形索引
+    for (unsigned int y = 0; y < ySegments; ++y) {
+        for (unsigned int x = 0; x < xSegments; ++x) {
+            unsigned int topLeft     =  y      * (xSegments + 1) + x;
+            unsigned int topRight    =  y      * (xSegments + 1) + x + 1;
+            unsigned int bottomLeft  = (y + 1) * (xSegments + 1) + x;
+            unsigned int bottomRight = (y + 1) * (xSegments + 1) + x + 1;
+
+            // 两个三角形
+            indices.push_back(topLeft);
+            indices.push_back(bottomLeft);
+            indices.push_back(topRight);
+
+            indices.push_back(topRight);
+            indices.push_back(bottomLeft);
+            indices.push_back(bottomRight);
+        }
+    }
+    std::vector<std::shared_ptr<Texture2D>> textures;
+    meshes.push_back(Mesh(vertices, indices, textures));
+}
 
 // constructor, expects a filepath to a 3D model.
-Model::Model(const std::string &path, bool gamma) : gammaCorrection(gamma) {
+Model::Model(const std::string &path, bool gamma, Model::Type type) : gammaCorrection(gamma), type(type) {
     loadModel(path);
 }
 
@@ -11,7 +69,7 @@ Model::Model(const std::string &path, bool gamma) : gammaCorrection(gamma) {
 void Model::draw(Shader &shader) {
     int mesh_sz = meshes.size();
     for (int i = 0; i < mesh_sz; ++i) {
-        meshes[i].draw(shader);
+        meshes[i].draw(shader, GL_TRIANGLES);
     }
 }
 

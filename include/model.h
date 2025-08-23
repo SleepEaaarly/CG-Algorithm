@@ -21,8 +21,17 @@ class Model {
     std::string directory;
     bool gammaCorrection; // no use so far
 
+    enum Type {
+      FILE,
+      SPHERE
+    };
+    
+    Type type;
+
+    Model(Type type, bool gamma = false);
+
     // constructor, expects a filepath to a 3D model.
-    Model(const std::string &path, bool gamma = false);
+    Model(const std::string &path, bool gamma = false, Type type = FILE);
 
     // draws the model, and thus all its meshes
     void draw(Shader &shader);
@@ -30,6 +39,7 @@ class Model {
     void loadTexturesNotMarked(const std::string &path, Texture2D::Type type);
 
   private:
+    void buildSphereMesh(unsigned int xSegments = 64, unsigned int ySegments = 64);
     // loads a model with supported ASSIMP extensions from file and stores the
     // resulting meshes in the meshes std::vector.
     void loadModel(std::string const &path);
