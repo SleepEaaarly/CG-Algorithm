@@ -2,6 +2,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include <iostream>
+#include <cassert>
 
 const GLint Texture2D::getId() { return id; }
 
