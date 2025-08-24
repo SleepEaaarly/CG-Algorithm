@@ -15,7 +15,7 @@ private:
 
 public:
     PBRRenderPass(std::shared_ptr<IGameObject> object) : obj(object) {
-        shader = std::make_shared<Shader>("shaders/pbr.vert", "shaders/pbr.frag");
+        shader = std::make_shared<Shader>("algos/test_pbr/pbr.vert", "algos/test_pbr/pbr.frag");
     }   
 
     void init() override {
