@@ -23,11 +23,11 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY,
     updateCameraVectors();
 }
 
-glm::mat4 Camera::GetViewMatrix() const {
+glm::mat4 Camera::getViewMatrix() const {
     return glm::lookAt(Position, Position + Front, Up);
 }
 
-glm::mat4 Camera::GetProjectionMatrix() const {
+glm::mat4 Camera::getProjectionMatrix() const {
     return glm::perspective(glm::radians(Zoom),
                             (float)(App::getInstance().getWidth()) /
                                 (float)(App::getInstance().getHeight()),

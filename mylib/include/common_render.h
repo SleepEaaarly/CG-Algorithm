@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <vector>
 #include <glm/glm.hpp>
+#include <iostream>
 
 inline void renderQuad() {
     static unsigned int quadVAO = 0;

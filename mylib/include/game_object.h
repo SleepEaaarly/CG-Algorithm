@@ -2,7 +2,7 @@
 
 #include "model.h"
 
-class IGameObject {
+class GameObject {
 protected:
     Model model;
 
@@ -13,21 +13,21 @@ protected:
     glm::mat3 normal_matrix;
 
 public:
-    IGameObject(Model::Type type, const glm::vec3& pos = glm::vec3(0.0f), 
+    GameObject(Model::Type type, const glm::vec3& pos = glm::vec3(0.0f), 
                const glm::vec3& rot = glm::vec3(0.0f), const glm::vec3& scl = glm::vec3(1.0f))
         : model(type), position(pos), rotation(rot), scale(scl) {
         updateMatrix();
     }
 
-    IGameObject(const std::string& model_path, const glm::vec3& pos = glm::vec3(0.0f), 
+    GameObject(const std::string& model_path, const glm::vec3& pos = glm::vec3(0.0f), 
                const glm::vec3& rot = glm::vec3(0.0f), const glm::vec3& scl = glm::vec3(1.0f))
         : model(model_path), position(pos), rotation(rot), scale(scl) {
         updateMatrix();
     }
     
-    virtual ~IGameObject() = default;
+    virtual ~GameObject() = default;
 
-    virtual void init() = 0;
+    virtual void init() {}
 
     void setPosition(const glm::vec3& pos) {
         position = pos;
@@ -74,4 +74,7 @@ public:
         model.draw(shader);
     }
 
+    Model& getModel() {
+        return model;
+    }
 };

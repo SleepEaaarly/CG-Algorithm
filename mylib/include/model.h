@@ -38,6 +38,10 @@ class Model {
 
     void loadTexturesNotMarked(const std::string &path, Texture2D::Type type);
 
+    unsigned int getTextureCount() {
+        return textures_loaded.size();
+    }
+
   private:
     void buildSphereMesh(unsigned int xSegments = 64, unsigned int ySegments = 64);
     // loads a model with supported ASSIMP extensions from file and stores the
@@ -57,6 +61,7 @@ class Model {
     std::vector<std::shared_ptr<Texture2D>>
     loadMaterialTextures(aiMaterial *mat, aiTextureType assimp_type,
                          Texture2D::Type type);
+
 };
 
 #endif

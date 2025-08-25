@@ -113,8 +113,14 @@ void App::run() {
     ResourceManager::getInstance().initResources();
 
     for (auto pre_pass : ResourceManager::getInstance().getAllPreRenderPasses()) {
+        glClearColor(0.f, 0.f, 0.f, 0.f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         pre_pass->render();
     }
+
+    int scrWidth, scrHeight;
+    glfwGetFramebufferSize(window, &scrWidth, &scrHeight);
+    glViewport(0, 0, scrWidth, scrHeight);
 
     while (!glfwWindowShouldClose(window)) {
         // per-frame time logic
@@ -134,12 +140,10 @@ void App::run() {
         for (auto obj : ResourceManager::getInstance().getAllGameObjects()) {
             obj->update();
         }
-        for (auto pass : ResourceManager::getInstance().getAllRenderPasses()) {
-            pass->update();
-        }
 
         // render all
         for (auto pass : ResourceManager::getInstance().getAllRenderPasses()) {
+            pass->update();
             pass->render();
         }
 

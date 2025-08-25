@@ -17,6 +17,7 @@ void Mesh::draw(Shader& shader, GLenum mode) {
     unsigned int metallic_num = 1;
     unsigned int normal_num = 1;
     unsigned int roughness_num = 1;
+    unsigned int ao_num = 1;
     for (int i = 0; i < textures.size(); i++) {
         glActiveTexture(
             GL_TEXTURE0 +
@@ -42,11 +43,15 @@ void Mesh::draw(Shader& shader, GLenum mode) {
             name = "roughness_map";
             number = std::to_string(roughness_num++);
             break;
+        case Texture2D::Type::AO:
+            name = "ao_map";
+            number = std::to_string(ao_num++);
+            break;
         default:
             break;
         }
 
-        assert(!name.empty());
+        assert(!name.empty() && "Texture type is None or not set");
 
         shader.setInt((name + number).c_str(), i);
         // 将shader中的 sampler 绑定对应的纹理单元(texture_unit)

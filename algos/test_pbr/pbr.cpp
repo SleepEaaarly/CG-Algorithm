@@ -4,9 +4,9 @@
 #include "pbr_render_pass.h"
 
 int main() {
-    App::getInstance().init(800, 600, "CG-Algorithm");
+    App::getInstance().init(800, 600, "Test-PBR");
 
-    ResourceManager::getInstance().registerGameObject("gun", std::make_shared<PBRGun>("model/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX"));
+    ResourceManager::getInstance().registerGameObject("gun", std::make_shared<PBRGun>("models/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX"));
     ResourceManager::getInstance().registerRenderPass("pbr_pass", std::make_shared<PBRRenderPass>(ResourceManager::getInstance().getGameObject("gun")));
 
     App::getInstance().run();

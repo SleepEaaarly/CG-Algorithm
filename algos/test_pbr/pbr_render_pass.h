@@ -10,11 +10,11 @@
 
 class PBRRenderPass : public IRenderPass {
 private:
-    std::shared_ptr<IGameObject> obj;
+    std::shared_ptr<GameObject> obj;
     std::vector<Light> lights;
 
 public:
-    PBRRenderPass(std::shared_ptr<IGameObject> object) : obj(object) {
+    PBRRenderPass(std::shared_ptr<GameObject> object) : obj(object) {
         shader = std::make_shared<Shader>("algos/test_pbr/pbr.vert", "algos/test_pbr/pbr.frag");
     }   
 
@@ -30,8 +30,8 @@ public:
         shader->setMat4("model", obj->getModelMatrix());
         shader->setMat3("normal_matrix", obj->getNormalMatrix());
         shader->setVec3("viewPos", ResourceManager::getInstance().getMainCamera().getPosition());
-        shader->setMat4("projection", ResourceManager::getInstance().getMainCamera().GetProjectionMatrix());
-        shader->setMat4("view", ResourceManager::getInstance().getMainCamera().GetViewMatrix());
+        shader->setMat4("projection", ResourceManager::getInstance().getMainCamera().getProjectionMatrix());
+        shader->setMat4("view", ResourceManager::getInstance().getMainCamera().getViewMatrix());
         for (int i = 0; i < 4; ++i) {
             float t = App::getInstance().getCurrentTime();
             if (t > 4.f)    t -= 4.f;

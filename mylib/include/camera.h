@@ -46,10 +46,10 @@ class Camera {
            float yaw, float pitch, float near = 0.1f, float far = 100.f);
 
     // returns the view matrix calculated using Euler Angles and the LookAt Matrix
-    glm::mat4 GetViewMatrix() const;
+    glm::mat4 getViewMatrix() const;
 
     // returns the projection matrix
-    glm::mat4 GetProjectionMatrix() const;
+    glm::mat4 getProjectionMatrix() const;
 
     // processes input received from any keyboard-like input system. Accepts
     // input parameter in the form of camera defined ENUM (to abstract it from
