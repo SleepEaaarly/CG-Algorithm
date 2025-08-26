@@ -3,8 +3,6 @@
 #include "resource_manager.h"
 #include "game_object.h"
 
-#include <iostream>
-
 class PBRRenderPass : public IRenderPass {
   private:
     std::shared_ptr<GameObject> pbr_object;
@@ -20,7 +18,7 @@ class PBRRenderPass : public IRenderPass {
         pbr_object->getModel().loadTexturesNotMarked("textures/rusted_iron_ball/normal.png", Texture2D::Type::Normal);
         pbr_object->getModel().loadTexturesNotMarked("textures/rusted_iron_ball/roughness.png", Texture2D::Type::Roughness);
         pbr_object->getModel().loadTexturesNotMarked("textures/rusted_iron_ball/ao.png", Texture2D::Type::AO);
-        pbr_object->setPosition(glm::vec3(-5.0f, 0.0f, 0.0f));
+        pbr_object->setPosition(glm::vec3(-5.0f, 0.0f, 2.0f));
         shader->use();
         shader->setMat4("projection", ResourceManager::getInstance().getMainCamera().getProjectionMatrix());
         shader->setMat4("model", pbr_object->getModelMatrix());

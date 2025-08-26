@@ -3,6 +3,8 @@ out vec4 FragColor;
 in vec2 TexCoords;
 in vec3 WorldPos;
 in vec3 Normal;
+in vec3 tangent;
+in vec3 bitangent;
 
 // material parameters
 uniform sampler2D albedo_map1;
@@ -23,6 +25,8 @@ uniform vec3 lightColors[4];
 uniform vec3 camPos;
 
 const float PI = 3.14159265359;
+
+mat3 TBN;
 // ----------------------------------------------------------------------------
 // Easy trick to get tangent-normals to world-space to keep PBR code simplified.
 // Don't worry if you don't get what's going on; you generally want to do normal 
@@ -30,19 +34,9 @@ const float PI = 3.14159265359;
 // technique somewhere later in the normal mapping tutorial.
 vec3 getNormalFromMap()
 {
-    vec3 tangentNormal = texture(normal_map1, TexCoords).xyz * 2.0 - 1.0;
+    vec3 sample_normal = texture(normal_map1, TexCoords).xyz * 2.0 - 1.0;
 
-    vec3 Q1  = dFdx(WorldPos);
-    vec3 Q2  = dFdy(WorldPos);
-    vec2 st1 = dFdx(TexCoords);
-    vec2 st2 = dFdy(TexCoords);
-
-    vec3 N   = normalize(Normal);
-    vec3 T  = normalize(Q1*st2.t - Q2*st1.t);
-    vec3 B  = -normalize(cross(N, T));
-    mat3 TBN = mat3(T, B, N);
-
-    return normalize(TBN * tangentNormal);
+    return TBN * sample_normal;
 }
 // ----------------------------------------------------------------------------
 float DistributionGGX(vec3 N, vec3 H, float roughness)
@@ -103,6 +97,8 @@ void main()
     float ao = texture(ao_map1, TexCoords).r;
        
     // input lighting data
+    TBN = mat3(normalize(tangent), normalize(bitangent), normalize(Normal));
+
     vec3 N = getNormalFromMap();
     vec3 V = normalize(camPos - WorldPos);
     vec3 R = reflect(-V, N); 
@@ -162,13 +158,14 @@ void main()
     
     // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
     const float MAX_REFLECTION_LOD = 4.0;
-    vec3 prefilteredColor = textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb;    
+    vec3 prefilteredColor = textureLod(prefilterMap, R,  MAX_REFLECTION_LOD * roughness).rgb;    
     vec2 brdf  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
     vec3 ambient = (kD * diffuse + specular) * ao;
-    
+
     vec3 color = ambient + Lo;
+    // vec3 color = prefilteredColor;
 
     // HDR tonemapping
     color = color / (color + vec3(1.0));

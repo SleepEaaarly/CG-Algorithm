@@ -35,11 +35,6 @@ class Texture2D {
 
     ~Texture2D() = default;
 
-    // load texture with stbi_image.h and modify some params according to images
-    void loadUnsignedIntTextureFromFile(const std::string &path, bool change_format);
-
-    void loadFloatTextureFromFile(const std::string &path);
-
     const std::string &getPath() { return path; }
 
     const Type getType() { return texture_type; }
@@ -48,6 +43,14 @@ class Texture2D {
 
     const unsigned int getWidth() { return width; }
     const unsigned int getHeight() { return height; }
+
+  private:
+    // load texture with stbi_image.h and modify some params according to images
+    void loadUnsignedIntTextureFromFile(const std::string &path, bool change_format);
+
+    void loadFloatTextureFromFile(const std::string &path);
+
+    void allocateTextureSpace();
 };
 
 class Cubemap {

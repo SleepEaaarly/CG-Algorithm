@@ -51,6 +51,7 @@ class HDRMap2CubemapPass : public IRenderPass {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, env_cubemap->getId());
         glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
         glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
     }   
 

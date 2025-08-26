@@ -3,6 +3,9 @@
 #include "texture.h"
 #include "resource_manager.h"
 #include "common_render.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 
 class PrefilterPass : public IRenderPass {
   public:
@@ -37,7 +40,7 @@ class PrefilterPass : public IRenderPass {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, env_cubemap->getId());
         
-        unsigned int maxMipLevels = 5;
+        unsigned int maxMipLevels = 6;
         for (unsigned int mip = 0; mip < maxMipLevels; ++mip) {
             // reisze framebuffer according to mip-level size.
             unsigned int mipWidth  = static_cast<unsigned int>(128 * std::pow(0.5, mip));
@@ -45,7 +48,7 @@ class PrefilterPass : public IRenderPass {
             capture_fbo->resize(mipWidth, mipHeight);
             glViewport(0, 0, mipWidth, mipHeight);
 
-            float roughness = (float)mip / (float)(maxMipLevels - 1);
+            float roughness = std::min((float)mip / (float)(maxMipLevels - 1), 1.f);
             shader->setFloat("roughness", roughness);
             for (unsigned int i = 0; i < 6; ++i) {
                 shader->setMat4("view", captureViews[i]);

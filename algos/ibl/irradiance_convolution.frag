@@ -27,11 +27,12 @@ void main() {
             vec3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * N;
 
             irradiance += texture(environmentMap, sampleVec).rgb * cos(theta) * sin(theta);
+            // irradiance += vec3(1.f, 0.f, 0.f) * cos(theta) * sin(theta);
             nrSamples++;
         }
     }
 
     irradiance = irradiance * PI / float(nrSamples);
-
+    
     FragColor = vec4(irradiance, 1.0);
 }

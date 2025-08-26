@@ -9,7 +9,7 @@
 
 
 int main(int argc, char** argv) {
-    App::getInstance().init(800, 600, "IBL");
+    App::getInstance().init(1280, 720, "IBL");
 
     ResourceManager::getInstance().registerSphere();
     auto sphere = ResourceManager::getInstance().getGameObject("Sphere1");
