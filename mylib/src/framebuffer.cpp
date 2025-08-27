@@ -2,9 +2,8 @@
 #include "texture.h"
 #include <iostream>
 
-Framebuffer::Framebuffer(unsigned int width, unsigned int height, 
-GLenum renderbuffer_internal_format, GLenum renderbuffer_attachment)
-    : width(width), height(height), renderbuffer_internal_format(renderbuffer_internal_format),
+Framebuffer::Framebuffer(GLenum renderbuffer_internal_format, GLenum renderbuffer_attachment)
+    : width(0), height(0), renderbuffer_internal_format(renderbuffer_internal_format),
       renderbuffer_attachment(renderbuffer_attachment) {
     glGenFramebuffers(1, &id);
     glBindFramebuffer(GL_FRAMEBUFFER, id);
@@ -12,10 +11,6 @@ GLenum renderbuffer_internal_format, GLenum renderbuffer_attachment)
     // Create a renderbuffer object for depth and stencil attachment
     glGenRenderbuffers(1, &renderbuffer_id);
     glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer_id);
-    glRenderbufferStorage(GL_RENDERBUFFER, renderbuffer_internal_format, width,
-                          height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, renderbuffer_attachment,
-                              GL_RENDERBUFFER, renderbuffer_id);
 
     // Unbind the framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -41,9 +36,7 @@ void Framebuffer::resize(unsigned int new_width, unsigned int new_height) {
 void Framebuffer::setColorAttachment(std::shared_ptr<Texture2D> texture) {
     glBindFramebuffer(GL_FRAMEBUFFER, id);
     if (texture->getWidth() != width || texture->getHeight() != height) {
-        std::cerr << "Error: Texture size does not match framebuffer size."
-                  << std::endl;
-        return;
+        resize(texture->getWidth(), texture->getHeight());
     }
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                            GL_TEXTURE_2D, texture->getId(), 0);
@@ -59,11 +52,15 @@ void Framebuffer::setColorAttachment(std::shared_ptr<Texture2D> texture) {
 }
 
 void Framebuffer::setColorAttachment(std::vector<std::shared_ptr<Texture2D>>& texture) {
+    if (texture.size() == 0)    return;
     glBindFramebuffer(GL_FRAMEBUFFER, id);
+    if (texture[0]->getWidth() != width || texture[0]->getHeight() != height) {
+        resize(texture[0]->getWidth(), texture[0]->getHeight());
+    }
     std::vector<GLenum> draw_buffers(texture.size());
     for (int i = 0; i < texture.size(); ++i) {
         if (texture[i]->getWidth() != width || texture[i]->getHeight() != height) {
-            std::cerr << "Error: Texture index " << i << " size does not match framebuffer size."
+            std::cerr << "Error: Texture index " << i << " size does not match first texture size."
                       << std::endl;
             return;
         }
@@ -81,12 +78,30 @@ void Framebuffer::setColorAttachment(std::vector<std::shared_ptr<Texture2D>>& te
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+// void Framebuffer::setColorAttachment(std::shared_ptr<Cubemap> texture) {
+//     glBindFramebuffer(GL_FRAMEBUFFER, id);
+//     if (texture->getWidth() != width || texture->getHeight() != height) {
+//         std::cerr << "Error: Texture size does not match framebuffer size."
+//                   << std::endl;
+//         return;
+//     }
+//     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture->getId(), 0);
+//     glDrawBuffer(GL_COLOR_ATTACHMENT0);
+//     // Check if framebuffer is complete
+//     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+//         std::cerr << "Error: Framebuffer is not complete!" << std::endl;
+//     }
+
+//     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+// }
+
 void Framebuffer::setColorAttachment(std::shared_ptr<Cubemap> texture, unsigned int face, unsigned int mip) {
     glBindFramebuffer(GL_FRAMEBUFFER, id);
-    if (mip == 0 && (texture->getWidth() != width || texture->getHeight() != height)) {
-        std::cerr << "Error: Texture size does not match framebuffer size."
-                  << std::endl;
-        return;
+
+    auto tex_width = static_cast<unsigned int>(std::pow(0.5, mip) * texture->getWidth());
+    auto tex_height = static_cast<unsigned int>(std::pow(0.5, mip) * texture->getHeight());
+    if (tex_width != width || tex_height != height) {
+        resize(tex_width, tex_height);
     }
     if (face >= 6) {
         std::cerr << "Error: Cubemap face index out of range." << std::endl;

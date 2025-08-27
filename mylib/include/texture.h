@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <string>
+#include <vector>
 
 class Texture2D {
   public:
@@ -66,7 +67,7 @@ class Cubemap {
             GLenum image_format = GL_RGB, GLenum data_type = GL_FLOAT,
             GLuint wrap_s = GL_CLAMP_TO_EDGE, GLuint wrap_t = GL_CLAMP_TO_EDGE,
             GLuint wrap_r = GL_CLAMP_TO_EDGE,
-            GLuint filter_min = GL_LINEAR_MIPMAP_LINEAR,
+            GLuint filter_min = GL_LINEAR,
             GLuint filter_max = GL_LINEAR);
 
     ~Cubemap() = default;
@@ -75,4 +76,6 @@ class Cubemap {
 
     const unsigned int getWidth() { return width; }
     const unsigned int getHeight() { return height; }
+
+    std::vector<float> getData();
 };

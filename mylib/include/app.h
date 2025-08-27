@@ -39,6 +39,9 @@ private:
 public:
     void init(unsigned int width, unsigned int height, const std::string& window_title = "CG-Algorithm");
 
+    void initResource();
+    void runPreRender();
+    void runRenderLoop();
     void run();
 
     const unsigned int getWidth() const;

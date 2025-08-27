@@ -9,7 +9,7 @@
 class IrradianceCubemapPass : public IRenderPass {
   public:
     IrradianceCubemapPass() {
-        shader = std::make_shared<Shader>("algos/ibl/cubemap.vert", "algos/ibl/irradiance_convolution.frag");
+        shader = std::make_shared<Shader>("shaders/cubemap.vert", "algos/ibl/irradiance_convolution.frag");
     }
 
     void init() override {
@@ -21,7 +21,6 @@ class IrradianceCubemapPass : public IRenderPass {
         auto env_cubemap = ResourceManager::getInstance().getCubemap("env_cubemap");
         auto irradiance_cubemap = ResourceManager::getInstance().getCubemap("irradiance_cubemap");
         auto capture_fbo = ResourceManager::getInstance().getFramebuffer("capture_fbo");
-        capture_fbo->resize(32, 32);
         glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
         glm::mat4 captureViews[] = {
             glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),

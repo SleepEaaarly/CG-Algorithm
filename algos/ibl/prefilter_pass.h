@@ -3,17 +3,17 @@
 #include "texture.h"
 #include "resource_manager.h"
 #include "common_render.h"
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
 
 
 class PrefilterPass : public IRenderPass {
   public:
     PrefilterPass() {
-        shader = std::make_shared<Shader>("algos/ibl/cubemap.vert", "algos/ibl/prefilter.frag");
+        shader = std::make_shared<Shader>("shaders\\cubemap.vert", "algos\\ibl\\prefilter.frag");
     }
 
     void init() override {
+        // enable seamless cubemap sampling for lower mip levels in the pre-filter map.
+        glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     }
 
     void render() override {
@@ -24,7 +24,6 @@ class PrefilterPass : public IRenderPass {
         glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
         auto env_cubemap = ResourceManager::getInstance().getCubemap("env_cubemap");
         auto capture_fbo = ResourceManager::getInstance().getFramebuffer("capture_fbo");
-        capture_fbo->resize(128, 128);
         glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
         glm::mat4 captureViews[] = {
             glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
@@ -45,7 +44,6 @@ class PrefilterPass : public IRenderPass {
             // reisze framebuffer according to mip-level size.
             unsigned int mipWidth  = static_cast<unsigned int>(128 * std::pow(0.5, mip));
             unsigned int mipHeight = static_cast<unsigned int>(128 * std::pow(0.5, mip));
-            capture_fbo->resize(mipWidth, mipHeight);
             glViewport(0, 0, mipWidth, mipHeight);
 
             float roughness = std::min((float)mip / (float)(maxMipLevels - 1), 1.f);

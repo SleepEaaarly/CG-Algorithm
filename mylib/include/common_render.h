@@ -28,6 +28,7 @@ inline void renderQuad() {
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
                               (void *)(3 * sizeof(float)));
+        glBindVertexArray(0);
     }
     glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -191,8 +192,21 @@ inline void renderSphere() {
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride,
                               (void *)(6 * sizeof(float)));
+        glBindVertexArray(0);
     }
 
     glBindVertexArray(sphereVAO);
     glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
+
+inline void renderDummy() {
+    static unsigned int dummyVAO = 0;
+    if (dummyVAO == 0) {
+        glGenVertexArrays(1, &dummyVAO);
+        glBindVertexArray(0);
+    }
+    glBindVertexArray(dummyVAO);
+    glDrawArrays(GL_POINTS, 0, 1);
+    glBindVertexArray(0);
 }

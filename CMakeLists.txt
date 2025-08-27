@@ -5,6 +5,8 @@ project(CG-Algorithm)
 add_library(ext_glad STATIC external/glad/src/glad.c)
 target_include_directories(ext_glad SYSTEM PUBLIC external/glad/include)
 
+add_library(ext_stb STATIC external/stb/src/stb_image.cpp external/stb/src/stb_image_write.cpp)
+target_include_directories(ext_stb SYSTEM PUBLIC external/stb/include)
 
 add_library(ext_assimp INTERFACE IMPORTED)
 target_include_directories(ext_assimp SYSTEM INTERFACE external/assimp/include)
@@ -19,9 +21,6 @@ target_link_libraries(ext_glfw INTERFACE
 # 纯头文件库
 add_library(ext_glm INTERFACE IMPORTED)
 target_include_directories(ext_glm SYSTEM INTERFACE external/glm)
-
-add_library(ext_stb INTERFACE IMPORTED)
-target_include_directories(ext_stb SYSTEM INTERFACE external/stb)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${CMAKE_SOURCE_DIR}/bin)

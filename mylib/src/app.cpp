@@ -109,15 +109,19 @@ void App::init(unsigned int width, unsigned int height,
     glEnable(GL_DEPTH_TEST);
 }
 
-void App::run() {
+void App::initResource() {
     ResourceManager::getInstance().initResources();
+}
 
+void App::runPreRender() {
     for (auto pre_pass : ResourceManager::getInstance().getAllPreRenderPasses()) {
         glClearColor(0.f, 0.f, 0.f, 0.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         pre_pass->render();
     }
+}
 
+void App::runRenderLoop() {
     int scrWidth, scrHeight;
     glfwGetFramebufferSize(window, &scrWidth, &scrHeight);
     glViewport(0, 0, scrWidth, scrHeight);
@@ -152,6 +156,14 @@ void App::run() {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+}
+
+void App::run() {
+    initResource();
+
+    runPreRender();
+
+    runRenderLoop();
 }
 
 const unsigned int App::getWidth() const { return SCR_WIDTH; }

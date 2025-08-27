@@ -19,7 +19,6 @@ class BRDFLUTPass : public IRenderPass {
     
         auto brdf_lut_texture = ResourceManager::getInstance().getTexture2D("brdf_lut_texture");
         auto capture_fbo = ResourceManager::getInstance().getFramebuffer("capture_fbo");
-        capture_fbo->resize(512, 512);
 
         capture_fbo->setColorAttachment(brdf_lut_texture);
 

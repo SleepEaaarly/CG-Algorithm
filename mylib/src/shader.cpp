@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <glm/gtc/type_ptr.hpp>
 
 Shader::Shader(const char *vertexPath, const char *fragmentPath,
                const char *geometryPath) {
@@ -134,6 +135,11 @@ void Shader::setMat3(const std::string &name, const glm::mat3 &mat) const {
 void Shader::setMat4(const std::string &name, const glm::mat4 &mat) const {
     glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE,
                        &mat[0][0]);
+}
+
+void Shader::setMat4Array(const std::string &name, const glm::mat4 &mat, size_t num) const {
+    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), num, GL_FALSE,
+                       glm::value_ptr(mat));
 }
 
 // utility function for checking shader compilation/linking errors.
