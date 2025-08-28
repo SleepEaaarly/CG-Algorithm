@@ -15,7 +15,7 @@ class HDRMap2CubemapPass : public IRenderPass {
     }
 
     void render() override {
-        ResourceManager::getInstance().registerTexture2D("hdr_texture", std::make_shared<Texture2D>("textures/sunset.hdr", Texture2D::Type::None, GL_RGB16F, GL_RGB, GL_FLOAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR));
+        ResourceManager::getInstance().registerTexture2D("hdr_texture", std::make_shared<Texture2D>("textures/newport_loft.hdr", Texture2D::Type::None, GL_RGB16F, GL_RGB, GL_FLOAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR));
         ResourceManager::getInstance().registerCubemap("env_cubemap", std::make_shared<Cubemap>(512, 512, GL_RGB16F, GL_RGB, GL_FLOAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR));
         ResourceManager::getInstance().registerFramebuffer("capture_fbo", std::make_shared<Framebuffer>());
         auto hdr_texture = ResourceManager::getInstance().getTexture2D("hdr_texture");

@@ -74,6 +74,8 @@ void Camera::ProcessMouseScroll(float yoffset) {
         Zoom = 45.0f;
 }
 
+#include <iostream>
+
 void Camera::updateCameraVectors() {
     // calculate the new Front vector
     glm::vec3 front;
@@ -81,6 +83,7 @@ void Camera::updateCameraVectors() {
     front.y = sin(glm::radians(Pitch));
     front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
     Front = glm::normalize(front);
+    // std::cout << front.z << std::endl;
     // also re-calculate the Right and Up vector
     Right = glm::normalize(glm::cross(
         Front, WorldUp)); // normalize the vectors, because their length

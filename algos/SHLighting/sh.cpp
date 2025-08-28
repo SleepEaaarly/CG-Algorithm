@@ -12,7 +12,9 @@ int main() {
     App::getInstance().initResource();
     App::getInstance().runPreRender();
     SHSampler sampler(3, "sh_coffs.txt");
+    auto skybox = ResourceManager::getInstance().getCubemap("env_cubemap");
     if (!sampler.hasData()) {
-        sampler.calcSHCoeffs();
+       sampler.saveCubemapFaces(skybox->getData(), 512, 512, "skybox");
     }
+    App::getInstance().runRenderLoop();
 }

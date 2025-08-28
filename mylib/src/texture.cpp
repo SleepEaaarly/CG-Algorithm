@@ -147,8 +147,8 @@ Cubemap::Cubemap(GLuint width, GLuint height, GLenum internal_format,
 }
 
 std::vector<float> Cubemap::getData() {
-    if (!(image_format == GL_RGB && data_type == GL_FLOAT)) {
-        std::cerr << "Only for GL_RGB and GL_FLOAT cubemap to get level 0 data" << std::endl;
+    if (internal_format != GL_RGB16F && internal_format != GL_RGB32F) {
+        std::cerr << "Only for Float type cubemap to get level 0 data" << std::endl;
         return {};
     }
     
