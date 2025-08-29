@@ -78,4 +78,6 @@ class Cubemap {
     const unsigned int getHeight() { return height; }
 
     std::vector<float> getData();
+
+    void setWhite(int face);
 };

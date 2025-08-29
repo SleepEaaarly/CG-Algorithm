@@ -165,3 +165,19 @@ std::vector<float> Cubemap::getData() {
     
     return image_data;
 }
+
+void Cubemap::setWhite(int face) {
+    assert(face <= 5 && "Cubemap face must be less than 6");
+    if (internal_format != GL_RGB16F && internal_format != GL_RGB32F) {
+        std::cerr << "Only for Float type cubemap to paint white" << std::endl;
+    }
+
+    int unit_size = width * height * 3;
+    std::vector<float> white(unit_size, 1.f);
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, id);
+
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, internal_format, width, height, 0, GL_RGB, GL_FLOAT, white.data());
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+}
