@@ -19,20 +19,10 @@ class SHSampler {
         if (!fin) {
             return false;
         }
-        auto n = degree * degree;
-        std::string line;
-        if (!std::getline(fin, line)) {
-            return false;
-        }
-        std::istringstream iss(line);
-        sh_coeffs.reserve(n);
-        float value;
-        size_t cnt = 0;
-        while (iss >> value) {
-            cnt++;
-            if (cnt > n)
-                return false;
-            sh_coeffs.push_back(value);
+        auto n = (degree+1) * (degree+1);
+        float x, y, z;
+        while (fin >> x >> y >> z) {
+            sh_coeffs.push_back(glm::vec3(x, y, z));
         }
 
         return sh_coeffs.size() == n;
@@ -48,6 +38,9 @@ class SHSampler {
     void calcSHCoeffs(std::vector<float> &image_data, unsigned int width,
                       unsigned int height, int com = 3) {
         // com = 3 : rgb
+        int n = (degree+1)*(degree+1);
+        sh_coeffs.resize(n);
+        std::vector<float> sh_basis(n);
         for (int face = 0; face < 6; ++face) {
             for (auto row = 0; row < height; ++row) {
                 for (auto col = 0; col < width; ++col) {
@@ -55,14 +48,21 @@ class SHSampler {
                         (col + width * row + width * height * face) * com;
                     glm::vec3 color(image_data[ind], image_data[ind + 1],
                                     image_data[ind + 2]);
-                    glm::vec3 world_vec = getTexelWorldVector(face, row, col, height, width);
+                    auto [world_vec, half_texel_vec] = getTexelWorldVector(face, row, col, height, width);
+                    for (int l = 0; l <= degree; ++l) {
+                        for (int m = -l; m <= l; ++m) {
+                            int ind = l*(l+1)+m;
+                            sh_basis[ind] = getBasis(world_vec, l, m);
+                        }
+                    }
                 }
             }
         }
     }
 
-    glm::vec3 getTexelWorldVector(int face, unsigned int row, unsigned int col, unsigned int height, unsigned int width) {
+    std::tuple<glm::vec3, glm::vec3> getTexelWorldVector(int face, unsigned int row, unsigned int col, unsigned int height, unsigned int width) {
         glm::vec3 dir;
+        glm::vec3 unit;
         float tex_height_unit = 1.f / height;
         float tex_width_unit = 1.f / width;
         float u = (static_cast<float>(col) + 0.5f) * tex_width_unit;
@@ -70,27 +70,70 @@ class SHSampler {
         switch (face) {
         case 0:
             dir = glm::vec3(1.f, 1.f-2*u, 1.f-2*v);
+            unit = glm::vec3(0.f, -tex_width_unit, -tex_height_unit);
             break;
         case 1:
             dir = glm::vec3(-1.f, 2*u-1.f, 1.f-2*v);
+            unit = glm::vec3(0.f, tex_width_unit, -tex_height_unit);
             break;
         case 2:
             dir = glm::vec3(2*u-1.f, 1.f, 2*v-1.f);
+            unit = glm::vec3(tex_width_unit, 0.f, tex_height_unit);
             break;
         case 3:
             dir = glm::vec3(2*u-1.f, -1.f, 1.f-2*v);
+            unit = glm::vec3(tex_width_unit, 0.f, -tex_height_unit);
             break;
         case 4:
             dir = glm::vec3(2*u-1.f, 1.f-2*v, 1.f);
+            unit = glm::vec3(tex_width_unit, -tex_height_unit, 0.f);
             break;
         case 5:
             dir = glm::vec3(1.f-2*u, 1.f-2*v, -1.f);
+            unit = glm::vec3(-tex_width_unit, -tex_height_unit, 0.f);
             break;
         default:
             assert(false && "Face num cannot be other number!");
             break;
         }
-        return dir;
+        return std::tuple(dir, unit);
+    }
+
+    float getBasis(const glm::vec3& world_vec, int l, int m) {
+        assert(abs(m) <= l);
+        auto dir = glm::normalize(world_vec);
+        const float inv_sqrt_pi = 0.564190f;
+        float x = dir.x, y = dir.y, z = dir.z;
+        if (l == 0) {
+            return 0.5 * inv_sqrt_pi;
+        } else if (l == 1) {
+            switch (m) {
+            case 0:     return 0.5 * std::sqrt(3) * inv_sqrt_pi * z;
+            case 1:     return 0.5 * std::sqrt(3) * inv_sqrt_pi * x;
+            case -1:    return 0.5 * std::sqrt(3) * inv_sqrt_pi * y;
+            }
+        } else if (l == 2) {
+            switch (m)
+            {
+            case 0:     return 0.25 * std::sqrt(5) * inv_sqrt_pi * (2*z*z-x*x-y*y);
+            case 1:     return 0.5 * std::sqrt(15) * inv_sqrt_pi * (z*x);
+            case -1:    return 0.5 * std::sqrt(15) * inv_sqrt_pi * (y*z);
+            case 2:     return 0.25 * std::sqrt(15) * inv_sqrt_pi * (x*x-y*y);
+            case -2:    return 0.5 * std::sqrt(15) * inv_sqrt_pi * (x*y);
+            }
+        } else if (l == 3) {
+            switch (m) {
+            case 0:     return 0.25 * std::sqrt(7) * inv_sqrt_pi * z*(2*z*z-3*x*x-3*y*y);
+            case 1:     return 0.25 * std::sqrt(21.0/2.0) * inv_sqrt_pi * x*(5*z*z-1);
+            case -1:    return 0.25 * std::sqrt(21.0/2.0) * inv_sqrt_pi * y*(5*z*z-1);
+            case 2:     return 0.25 * std::sqrt(105) * inv_sqrt_pi * z*(x*x-y*y);
+            case -2:    return 0.5 * std::sqrt(105) * inv_sqrt_pi * x*y*z;
+            case 3:     return 0.25 * std::sqrt(35.0/2.0) * inv_sqrt_pi * x*(x*x-3*y*y);
+            case -3:    return 0.25 * std::sqrt(35.0/2.0) * inv_sqrt_pi * y*(3*x*x-y*y);
+            }
+        } else {
+            assert(false && "sh degree >= 4");
+        }
     }
 
     float toneMap(float v) {
