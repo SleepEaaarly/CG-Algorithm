@@ -58,7 +58,7 @@ class SHSampler {
 
     bool hasData() { return has_data; }
 
-    void calcSHCoeffs(std::shared_ptr<Cubemap> cubemap, bool save = true, int com = 3) {
+    void calcSHCoeffs(std::shared_ptr<Cubemap> cubemap, bool save, int com = 3) {
         // com = 3 : rgb
         auto image_data = cubemap->getData();
         unsigned int width = cubemap->getWidth(), height = cubemap->getHeight();
@@ -185,10 +185,9 @@ class SHSampler {
         }
     }
 
-    float toneMap(float v) {
-        // Reinhard
-        return v / (1.0f + v);
-    }
+    const std::vector<glm::vec3> getSHLightCoeffs() {
+        return sh_coeffs;
+    } 
 
     bool saveCubemapFaces(const std::vector<float> &pixels, int faceW,
                           int faceH, const std::string &baseName, bool reverse = true) {
@@ -232,8 +231,5 @@ class SHSampler {
         return true;
     }
 
-    const std::vector<glm::vec3> getSHLightCoeffs() {
-        return sh_coeffs;
-    } 
 
 };
