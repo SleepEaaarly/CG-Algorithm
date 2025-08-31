@@ -183,7 +183,7 @@ void Cubemap::setColor(int face) {
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             float *pixel = &img[(y * width + x) * 3];
-
+            // 这里的方向指的是按照左手系（也就是cubemap空间坐标系），与实际为水平镜像
             if (x < hw && y < hh) { // 左上 -> 红
                 pixel[0] = 1.f;
                 pixel[1] = 0.f;
