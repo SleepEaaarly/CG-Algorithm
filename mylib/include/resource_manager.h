@@ -65,7 +65,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Framebuffer>> framebuffers;
     std::unordered_map<std::string, std::shared_ptr<Cubemap>> cubemaps;
 
-    Camera main_camera = glm::vec3(0.0f, 0.0f, 3.0f);
+    Camera main_camera = glm::vec3(0.0f, 0.0f, -3.0f);
 
     ResourceManager() = default;
     ~ResourceManager() = default;

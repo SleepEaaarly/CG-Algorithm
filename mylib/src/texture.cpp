@@ -1,7 +1,7 @@
 #include "texture.h"
-#include <stb_image.h>
 #include <cassert>
 #include <iostream>
+#include <stb_image.h>
 
 Texture2D::Texture2D(unsigned int width, unsigned int height, Type type,
                      GLenum internal_format, GLenum image_format,
@@ -136,7 +136,8 @@ Cubemap::Cubemap(GLuint width, GLuint height, GLenum internal_format,
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_CUBE_MAP, id);
     for (size_t i = 0; i < 6; ++i) {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, width, height, 0, image_format, data_type, nullptr);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format,
+                     width, height, 0, image_format, data_type, nullptr);
     }
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, wrap_s);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, wrap_t);
@@ -148,36 +149,65 @@ Cubemap::Cubemap(GLuint width, GLuint height, GLenum internal_format,
 
 std::vector<float> Cubemap::getData() {
     if (internal_format != GL_RGB16F && internal_format != GL_RGB32F) {
-        std::cerr << "Only for Float type cubemap to get level 0 data" << std::endl;
+        std::cerr << "Only for Float type cubemap to get level 0 data"
+                  << std::endl;
         return {};
     }
-    
+
     glBindTexture(GL_TEXTURE_CUBE_MAP, id);
 
     size_t unit_size = width * height * 3;
     std::vector<float> image_data(6 * unit_size);
 
     for (size_t i = 0; i < 6; ++i) {
-        glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, GL_FLOAT, image_data.data() + i*unit_size);
+        glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, GL_FLOAT,
+                      image_data.data() + i * unit_size);
     }
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-    
+
     return image_data;
 }
 
-void Cubemap::setWhite(int face) {
+void Cubemap::setColor(int face) {
     assert(face <= 5 && "Cubemap face must be less than 6");
     if (internal_format != GL_RGB16F && internal_format != GL_RGB32F) {
         std::cerr << "Only for Float type cubemap to paint white" << std::endl;
     }
 
     int unit_size = width * height * 3;
-    std::vector<float> white(unit_size, 1.f);
+    std::vector<float> img(unit_size);
+
+    int hw = width / 2;
+    int hh = height / 2;
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            float *pixel = &img[(y * width + x) * 3];
+
+            if (x < hw && y < hh) { // 左上 -> 红
+                pixel[0] = 1.f;
+                pixel[1] = 0.f;
+                pixel[2] = 0.f;
+            } else if (x >= hw && y < hh) { // 右上 -> 绿
+                pixel[0] = 0.f;
+                pixel[1] = 1.f;
+                pixel[2] = 0.f;
+            } else if (x < hw && y >= hh) { // 左下 -> 蓝
+                pixel[0] = 0.f;
+                pixel[1] = 0.f;
+                pixel[2] = 1.f;
+            } else { // 右下 -> 白
+                pixel[0] = 1.f;
+                pixel[1] = 1.f;
+                pixel[2] = 1.f;
+            }
+        }
+    }
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, id);
 
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, internal_format, width, height, 0, GL_RGB, GL_FLOAT, white.data());
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, internal_format,
+                 width, height, 0, GL_RGB, GL_FLOAT, img.data());
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }

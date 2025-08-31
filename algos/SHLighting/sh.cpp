@@ -6,19 +6,22 @@
 #include "test_pass.h"
 
 int main() {
+    bool color_block_test = true;
     App::getInstance().init(1280, 720, "SH-Lighting");
 
     ResourceManager::getInstance().registerPreRenderPass("hdr2cubemap_pass", std::make_shared<HDRMap2CubemapPass>());
-    // ResourceManager::getInstance().registerPreRenderPass("test_pass", std::make_shared<TestPass>());
+    if (color_block_test)
+        ResourceManager::getInstance().registerPreRenderPass("test_pass", std::make_shared<TestPass>());
 
     App::getInstance().initResource();
     App::getInstance().runPreRender();
     int sh_degree = 3;
-    SHSampler sampler(sh_degree, "algos/SHLighting/sh_coffs.txt", true);
+    SHSampler sampler(sh_degree, "algos/SHLighting/sh_coffs.txt", !color_block_test);
     if (!sampler.hasData()) {
         auto skybox = ResourceManager::getInstance().getCubemap("env_cubemap");
-        sampler.calcSHCoeffs(skybox, true);
+        sampler.calcSHCoeffs(skybox, !color_block_test);
     }
+
     ResourceManager::getInstance().registerRenderPass("sh_lighting_pass", std::make_shared<SHLightingPass>(sh_degree, sampler.getSHLightCoeffs()));
     ResourceManager::getInstance().registerRenderPass("background_pass", std::make_shared<BackgroundPass>());
 

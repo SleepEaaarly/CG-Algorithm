@@ -79,5 +79,5 @@ class Cubemap {
 
     std::vector<float> getData();
 
-    void setWhite(int face);
+    void setColor(int face);
 };

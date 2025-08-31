@@ -115,10 +115,10 @@ class SHSampler {
         float v = (static_cast<float>(row) + 0.5f) * tex_height_unit;
         switch (face) {
         case 0:
-            dir = glm::vec3(1.f, 1.f-2*u, 1.f-2*v);
+            dir = glm::vec3(1.f, 1.f-2*v, 1.f-2*u);
             break;
         case 1:
-            dir = glm::vec3(-1.f, 2*u-1.f, 1.f-2*v);
+            dir = glm::vec3(-1.f, 1.f-2*v, 2*u-1.f);
             break;
         case 2:
             dir = glm::vec3(2*u-1.f, 1.f, 2*v-1.f);
