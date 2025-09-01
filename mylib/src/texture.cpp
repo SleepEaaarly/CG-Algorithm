@@ -177,26 +177,25 @@ void Cubemap::setColor(int face) {
 
     int unit_size = width * height * 3;
     std::vector<float> img(unit_size);
-
+    // 给某个面分区域设置红绿蓝白四个四块，验证sh采样正确性
     int hw = width / 2;
     int hh = height / 2;
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             float *pixel = &img[(y * width + x) * 3];
-            // 这里的方向指的是按照左手系（也就是cubemap空间坐标系），与实际为水平镜像
-            if (x < hw && y < hh) { // 左上 -> 红
+            if (x < hw && y < hh) { 
                 pixel[0] = 1.f;
                 pixel[1] = 0.f;
                 pixel[2] = 0.f;
-            } else if (x >= hw && y < hh) { // 右上 -> 绿
+            } else if (x >= hw && y < hh) { 
                 pixel[0] = 0.f;
                 pixel[1] = 1.f;
                 pixel[2] = 0.f;
-            } else if (x < hw && y >= hh) { // 左下 -> 蓝
+            } else if (x < hw && y >= hh) { 
                 pixel[0] = 0.f;
                 pixel[1] = 0.f;
                 pixel[2] = 1.f;
-            } else { // 右下 -> 白
+            } else { 
                 pixel[0] = 1.f;
                 pixel[1] = 1.f;
                 pixel[2] = 1.f;

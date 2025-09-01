@@ -6,7 +6,7 @@
 #include "test_pass.h"
 
 int main() {
-    bool color_block_test = true;
+    bool color_block_test = false;
     App::getInstance().init(1280, 720, "SH-Lighting");
 
     ResourceManager::getInstance().registerPreRenderPass("hdr2cubemap_pass", std::make_shared<HDRMap2CubemapPass>());

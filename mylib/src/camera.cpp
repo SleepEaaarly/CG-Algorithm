@@ -83,7 +83,7 @@ void Camera::updateCameraVectors() {
     front.y = sin(glm::radians(Pitch));
     front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
     Front = glm::normalize(front);
-    // std::cout << front.z << std::endl;
+    // std::cout << front.x << "," << front.y << "," << front.z << std::endl;
     // also re-calculate the Right and Up vector
     Right = glm::normalize(glm::cross(
         Front, WorldUp)); // normalize the vectors, because their length
