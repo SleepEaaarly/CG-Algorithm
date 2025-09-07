@@ -2,6 +2,15 @@
 
 目前已实现：
 
-IBL
+* IBL
 
-SHLighting
+* SHLighting
+
+TODO：
+
+* PCSS
+* Reflective Shadow Maps
+* Cascaded Shadow Maps
+* probes
+* lpv
+* vxgi
