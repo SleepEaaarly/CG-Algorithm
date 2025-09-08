@@ -205,8 +205,16 @@ void Cubemap::setColor(int face) {
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, id);
 
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, internal_format,
+    std::vector<float> black(unit_size);
+    for (int i = 0; i < 6; ++i) {
+        if (i == face) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, internal_format,
                  width, height, 0, GL_RGB, GL_FLOAT, img.data());
+        } else {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format,
+                 width, height, 0, GL_RGB, GL_FLOAT, black.data());
+        }
+    }
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }

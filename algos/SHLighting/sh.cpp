@@ -9,10 +9,11 @@ int main() {
     bool color_block_test = false;
     App::getInstance().init(1280, 720, "SH-Lighting");
 
-    ResourceManager::getInstance().registerPreRenderPass("hdr2cubemap_pass", std::make_shared<HDRMap2CubemapPass>());
     if (color_block_test)
         ResourceManager::getInstance().registerPreRenderPass("test_pass", std::make_shared<TestPass>());
-
+    else 
+        ResourceManager::getInstance().registerPreRenderPass("hdr2cubemap_pass", std::make_shared<HDRMap2CubemapPass>());
+    
     App::getInstance().initResource();
     App::getInstance().runPreRender();
     int sh_degree = 3;
