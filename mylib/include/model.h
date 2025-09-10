@@ -30,8 +30,12 @@ class Model {
     Type type;
 
     static Model getSphere();
-
+  
+  private:
     Model(bool gamma = false, Type type = Type::MEMORY);
+  
+  public:
+    Model(std::vector<Vertex>& vertex, bool gamma = false, Type type = Type::MEMORY);
 
     // constructor, expects a filepath to a 3D model.
     Model(const std::string &path, bool gamma = false, Type type = Type::FILE);

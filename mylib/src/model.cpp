@@ -9,6 +9,12 @@ Model::Model(const std::string &path, bool gamma, Model::Type type) : gammaCorre
     loadModel(path);
 }
 
+Model::Model(std::vector<Vertex>& vertex, bool gamma, Type type) : gammaCorrection(gamma), type(type) {
+    std::vector<unsigned int> indices;
+    std::vector<std::shared_ptr<Texture2D>> textures;
+    meshes.emplace_back(vertex, indices, textures);
+}
+
 Model Model::getSphere() {
     Model m;
     m.type = Model::Type::SPHERE;
