@@ -61,7 +61,10 @@ void Mesh::draw(Shader& shader, GLenum mode) {
 
     // draw mesh
     glBindVertexArray(VAO);
-    glDrawElements(mode, indices.size(), GL_UNSIGNED_INT, 0);
+    if (indices.size() != 0)
+        glDrawElements(mode, indices.size(), GL_UNSIGNED_INT, 0);
+    else 
+        glDrawArrays(mode, 0, vertices.size());
     glBindVertexArray(0);
 
     // always good practice to set everything back to defaults once
@@ -72,7 +75,8 @@ void Mesh::draw(Shader& shader, GLenum mode) {
 void Mesh::setupMesh() {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    if (indices.size() != 0)
+        glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -81,9 +85,11 @@ void Mesh::setupMesh() {
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex),
                  &vertices[0], GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
+    if (indices.size() != 0) {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
                  &indices[0], GL_STATIC_DRAW);
+    }
 
     // position
     glEnableVertexAttribArray(0);

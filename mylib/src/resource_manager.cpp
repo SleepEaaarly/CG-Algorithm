@@ -86,7 +86,7 @@ void ResourceManager::registerSphere() {
     static unsigned int sphere = 0;
     sphere++;
     std::string name = "Sphere" + std::to_string(sphere);
-    gameObjects_map[name] = std::make_shared<GameObject>(Model::SPHERE);
+    gameObjects_map[name] = std::make_shared<GameObject>(Model::getSphere());
     gameObjects.push_back(gameObjects_map[name]);
 }
 

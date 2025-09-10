@@ -13,9 +13,9 @@ protected:
     glm::mat3 normal_matrix;
 
 public:
-    GameObject(Model::Type type, const glm::vec3& pos = glm::vec3(0.0f), 
+    GameObject(Model& model, const glm::vec3& pos = glm::vec3(0.0f), 
                const glm::vec3& rot = glm::vec3(0.0f), const glm::vec3& scl = glm::vec3(1.0f))
-        : model(type), position(pos), rotation(rot), scale(scl) {
+        : model(model), position(pos), rotation(rot), scale(scl) {
         updateMatrix();
     }
 

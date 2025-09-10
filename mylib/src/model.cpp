@@ -2,10 +2,18 @@
 #include <iostream>
 #include <cassert>
 
-Model::Model(Model::Type type, bool gamma) : type(type), gammaCorrection(gamma) {
-    if (type == Model::Type::SPHERE)
-        buildSphereMesh();
-    else assert(false && "No other models you could use in this constructor");
+Model::Model(bool gamma, Type type) : gammaCorrection(gamma), type(type) {}
+
+// constructor, expects a filepath to a 3D model.
+Model::Model(const std::string &path, bool gamma, Model::Type type) : gammaCorrection(gamma), type(type) {
+    loadModel(path);
+}
+
+Model Model::getSphere() {
+    Model m;
+    m.type = Model::Type::SPHERE;
+    m.buildSphereMesh();
+    return m;
 }
 
 void Model::buildSphereMesh(unsigned int xSegments, unsigned int ySegments) {
@@ -58,11 +66,6 @@ void Model::buildSphereMesh(unsigned int xSegments, unsigned int ySegments) {
     }
     std::vector<std::shared_ptr<Texture2D>> textures;
     meshes.push_back(Mesh(vertices, indices, textures));
-}
-
-// constructor, expects a filepath to a 3D model.
-Model::Model(const std::string &path, bool gamma, Model::Type type) : gammaCorrection(gamma), type(type) {
-    loadModel(path);
 }
 
 // draws the model, and thus all its meshes

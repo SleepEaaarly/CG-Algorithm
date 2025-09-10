@@ -21,17 +21,20 @@ class Model {
     std::string directory;
     bool gammaCorrection; // no use so far
 
-    enum Type {
+    enum class Type {
       FILE,
+      MEMORY,
       SPHERE
     };
     
     Type type;
 
-    Model(Type type, bool gamma = false);
+    static Model getSphere();
+
+    Model(bool gamma = false, Type type = Type::MEMORY);
 
     // constructor, expects a filepath to a 3D model.
-    Model(const std::string &path, bool gamma = false, Type type = FILE);
+    Model(const std::string &path, bool gamma = false, Type type = Type::FILE);
 
     // draws the model, and thus all its meshes
     void draw(Shader &shader);
