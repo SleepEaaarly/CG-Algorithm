@@ -83,6 +83,46 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath,
         glDeleteShader(geometry);
     }
 }
+
+Shader::Shader(const char *computePath) {
+    std::string computeCode;
+    std::ifstream cShaderFile;
+    // ensure it can throw exceptions
+    cShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+    try {
+        // note name
+        fs_name = computePath;
+        // open files
+        cShaderFile.open(computePath);
+        std::stringstream cShaderStream;
+        // read file's buffer contents into streams
+        cShaderStream << cShaderFile.rdbuf();
+        // close file handlers
+        cShaderFile.close();
+        // convert stream into string
+        computeCode = cShaderStream.str();
+    } catch (std::ifstream::failure &e) {
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what()
+                  << std::endl;
+    }
+    const char *cShaderCode = computeCode.c_str();
+    unsigned int compute;
+    // compute shader
+    compute = glCreateShader(GL_COMPUTE_SHADER);
+    glShaderSource(compute, 1, &cShaderCode, nullptr);
+    glCompileShader(compute);
+    checkCompileErrors(compute, "COMPUTE");
+
+    // shader program
+    ID = glCreateProgram();
+    glAttachShader(ID, compute);
+    glLinkProgram(ID);
+    checkCompileErrors(ID, "PROGRAM");
+
+    glDeleteShader(compute);
+}
+
 // activate the shader
 // ------------------------------------------------------------------------
 void Shader::use() const { glUseProgram(ID); }

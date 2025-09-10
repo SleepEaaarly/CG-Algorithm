@@ -11,7 +11,7 @@ Texture2D::Texture2D(unsigned int width, unsigned int height, Type type,
       image_format(image_format), data_type(data_type), wrap_s(wrap_s),
       wrap_t(wrap_t), filter_min(filter_min), filter_max(filter_max),
       texture_type(type), path("") {
-    allocateTextureSpace();
+    allocateTexture();
 }
 
 Texture2D::Texture2D(const std::string &path, Type type, GLenum internal_format,
@@ -38,13 +38,12 @@ Texture2D::Texture2D(const std::string &path, Type type)
     loadUnsignedIntTextureFromFile(path, true);
 }
 
-void Texture2D::allocateTextureSpace() {
+void Texture2D::allocateTexture() {
     glGenTextures(1, &id);
 
     glBindTexture(GL_TEXTURE_2D, id);
     glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0,
                  image_format, data_type, nullptr);
-    glGenerateMipmap(GL_TEXTURE_2D);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t);

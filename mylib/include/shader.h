@@ -14,6 +14,8 @@ class Shader {
     // ------------------------------------------------------------------------
     Shader(const char *vertexPath, const char *fragmentPath,
            const char *geometryPath = nullptr);
+    
+    Shader(const char *computePath);
 
     // activate the shader
     // ------------------------------------------------------------------------

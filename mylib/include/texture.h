@@ -6,7 +6,7 @@
 
 class Texture2D {
   public:
-    enum Type { Albedo, Metallic, Normal, Roughness, AO, None };
+    enum class Type { Albedo, Metallic, Normal, Roughness, AO, None };
 
   private:
     GLuint id;
@@ -51,7 +51,7 @@ class Texture2D {
 
     void loadFloatTextureFromFile(const std::string &path);
 
-    void allocateTextureSpace();
+    void allocateTexture();
 };
 
 class Cubemap {
