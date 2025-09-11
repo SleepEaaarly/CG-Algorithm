@@ -68,10 +68,10 @@ public:
         return normal_matrix;
     }
 
-    void draw(Shader& shader) {
+    void draw(Shader& shader, GLenum mode = GL_TRIANGLES) {
         shader.setMat4("model", model_matrix);
         shader.setMat3("normal_matrix", normal_matrix);
-        model.draw(shader);
+        model.draw(shader, mode);
     }
 
     Model& getModel() {

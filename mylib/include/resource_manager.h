@@ -1,7 +1,7 @@
 #pragma once
 
 #include "singleton.h"
-#include "camera.h"
+#include "my_camera.h"
 
 #include <vector>
 #include <memory>
@@ -24,6 +24,10 @@ public:
     void registerGameObject(const std::string& name, std::shared_ptr<GameObject> obj);
 
     void registerSphere();
+
+    void setupMainCamera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
+           glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW,
+           float pitch = PITCH, float near = 0.1f, float far = 100.f);
 
     // Register a render pass that will be executed before the main render pass
     // This is useful for passes that need to set up the scene before the main rendering.

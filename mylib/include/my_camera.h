@@ -66,6 +66,10 @@ class Camera {
     void ProcessMouseScroll(float yoffset);
 
     glm::vec3 getPosition();
+    
+    void setupCamera(glm::vec3 position,
+           glm::vec3 up, float yaw,
+           float pitch, float near, float far);
 
   private:
     // calculates the front vector from the Camera's (updated) Euler Angles

@@ -75,10 +75,10 @@ void Model::buildSphereMesh(unsigned int xSegments, unsigned int ySegments) {
 }
 
 // draws the model, and thus all its meshes
-void Model::draw(Shader &shader) {
+void Model::draw(Shader &shader, GLenum mode) {
     int mesh_sz = meshes.size();
     for (int i = 0; i < mesh_sz; ++i) {
-        meshes[i].draw(shader, GL_TRIANGLES);
+        meshes[i].draw(shader, mode);
     }
 }
 

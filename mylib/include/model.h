@@ -5,7 +5,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-#include "mesh.h"
+#include "my_mesh.h"
 #include "shader.h"
 #include "texture.h"
 
@@ -41,7 +41,7 @@ class Model {
     Model(const std::string &path, bool gamma = false, Type type = Type::FILE);
 
     // draws the model, and thus all its meshes
-    void draw(Shader &shader);
+    void draw(Shader &shader, GLenum mode);
 
     void loadTexturesNotMarked(const std::string &path, Texture2D::Type type);
 

@@ -1,4 +1,4 @@
-#include "mesh.h"
+#include "my_mesh.h"
 #include "texture.h"
 #include <iostream>
 

@@ -1,5 +1,4 @@
 #include "resource_manager.h"
-#include "camera.h"
 #include "game_object.h"
 #include "light.h"
 #include "render_pass.h"
@@ -115,4 +114,9 @@ ResourceManager::getCubemap(const std::string &name) {
         return it->second;
     }
     throw std::out_of_range("Cubemap not found: " + name);
+}
+
+void ResourceManager::setupMainCamera(glm::vec3 position, glm::vec3 up, float yaw,
+                         float pitch, float near, float far) {
+    main_camera.setupCamera(position, up, yaw, pitch, near, far);
 }

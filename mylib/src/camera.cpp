@@ -1,4 +1,4 @@
-#include "camera.h"
+#include "my_camera.h"
 #include "app.h"
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch,
@@ -23,6 +23,18 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY,
     updateCameraVectors();
 }
 
+void Camera::setupCamera(glm::vec3 position, glm::vec3 up, float yaw,
+                         float pitch, float near, float far) 
+{
+    Position = position;
+    WorldUp = up;
+    Yaw = yaw;
+    Pitch = pitch;
+    this->near = near;
+    this->far = far;
+    updateCameraVectors();
+}
+
 glm::mat4 Camera::getViewMatrix() const {
     return glm::lookAt(Position, Position + Front, Up);
 }
@@ -31,7 +43,7 @@ glm::mat4 Camera::getProjectionMatrix() const {
     return glm::perspective(glm::radians(Zoom),
                             (float)(App::getInstance().getWidth()) /
                                 (float)(App::getInstance().getHeight()),
-                            0.1f, 100.0f);
+                            this->near, this->far);
 }
 
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
@@ -92,6 +104,4 @@ void Camera::updateCameraVectors() {
     Up = glm::normalize(glm::cross(Right, Front));
 }
 
-glm::vec3 Camera::getPosition() {
-    return Position;
-}
+glm::vec3 Camera::getPosition() { return Position; }
