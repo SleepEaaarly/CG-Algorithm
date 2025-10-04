@@ -22,6 +22,7 @@ float getShadow(vec4 clip_pos) {
 
     float shading_depth = light_space_pos.z;
 
+    // if shading point deeper than far plane of light space, return no shadow 
     if (shading_depth > 1.0)
         return 0.0;
 
