@@ -4,26 +4,35 @@
 
 class Light {
 private:
-    glm::vec3 position;
     glm::vec3 color;
 
 public:
-    Light(const glm::vec3& pos, const glm::vec3& col) : position(pos), color(col) {}
+    Light(const glm::vec3& col) : color(col) {}
 
-    const glm::vec3& getPosition() const {
-        return position;
-    }
-
-    const glm::vec3& getColor() const {
+    virtual const glm::vec3& getColor() const {
         return color;
     }
 
-    void setPosition(const glm::vec3& pos) {
-        position = pos;
+    virtual void setColor(const glm::vec3& col) {
+        color = col;
     }
 
-    void setColor(const glm::vec3& col) {
-        color = col;
+};
+
+class PointLight : public Light {
+private:
+    glm::vec3 position;
+
+public:
+    PointLight(const glm::vec3& pos, const glm::vec3& color) : 
+    Light(color), position(pos) {}
+    
+    const glm::vec3& getPosition() const {
+        return position;
+    }
+    
+    void setPosition(const glm::vec3& pos) {
+        this->position = pos;
     }
 
 };

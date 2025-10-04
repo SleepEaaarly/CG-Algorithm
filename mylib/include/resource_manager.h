@@ -44,6 +44,8 @@ public:
 
     void registerCubemap(const std::string& name, std::shared_ptr<Cubemap> cubemap);
 
+    void registerLight(const std::string& name, std::shared_ptr<Light> light);
+
     void initResources();
 
     std::vector<std::shared_ptr<GameObject>>& getAllGameObjects();
@@ -60,6 +62,8 @@ public:
 
     std::shared_ptr<Cubemap> getCubemap(const std::string& name);
 
+    std::shared_ptr<Light> getLight(const std::string& name);
+
 private:
     std::vector<std::shared_ptr<GameObject>> gameObjects;
     std::vector<std::shared_ptr<IRenderPass>> preRenderPasses;
@@ -68,6 +72,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Texture2D>> texture2ds;
     std::unordered_map<std::string, std::shared_ptr<Framebuffer>> framebuffers;
     std::unordered_map<std::string, std::shared_ptr<Cubemap>> cubemaps;
+    std::unordered_map<std::string, std::shared_ptr<Light>> lights;
 
     Camera main_camera = glm::vec3(0.0f, 0.0f, -3.0f);
 

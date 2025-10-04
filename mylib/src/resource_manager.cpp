@@ -43,6 +43,10 @@ void ResourceManager::registerFramebuffer(const std::string &name,
     framebuffers[name] = framebuffer;
 }
 
+void ResourceManager::registerLight(const std::string &name, std::shared_ptr<Light> light) {
+    lights[name] = light;
+}
+
 void ResourceManager::initResources() {
     for (auto obj : gameObjects) {
         obj->init();
@@ -114,6 +118,15 @@ ResourceManager::getCubemap(const std::string &name) {
         return it->second;
     }
     throw std::out_of_range("Cubemap not found: " + name);
+}
+
+std::shared_ptr<Light>
+ResourceManager::getLight(const std::string &name) {
+    auto it = lights.find(name);
+    if (it != lights.end()) {
+        return it->second;
+    }
+    throw std::out_of_range("Light not found: " + name);
 }
 
 void ResourceManager::setupMainCamera(glm::vec3 position, glm::vec3 up, float yaw,

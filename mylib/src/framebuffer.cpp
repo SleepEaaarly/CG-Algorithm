@@ -1,16 +1,19 @@
 #include "framebuffer.h"
 #include "texture.h"
 #include <iostream>
+#include <cassert>
 
-Framebuffer::Framebuffer(GLenum renderbuffer_internal_format, GLenum renderbuffer_attachment)
-    : width(0), height(0), renderbuffer_internal_format(renderbuffer_internal_format),
-      renderbuffer_attachment(renderbuffer_attachment) {
+Framebuffer::Framebuffer(bool use_renderbuffer, GLenum renderbuffer_internal_format, GLenum renderbuffer_attachment)
+    : width(0), height(0), use_renderbuffer(use_renderbuffer), renderbuffer_internal_format(renderbuffer_internal_format),
+      renderbuffer_attachment(renderbuffer_attachment), depth_tex_id(0) {
     glGenFramebuffers(1, &id);
     glBindFramebuffer(GL_FRAMEBUFFER, id);
 
-    // Create a renderbuffer object for depth and stencil attachment
-    glGenRenderbuffers(1, &renderbuffer_id);
-    glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer_id);
+    if (use_renderbuffer) {    
+        // Create a renderbuffer object for depth and stencil attachment
+        glGenRenderbuffers(1, &renderbuffer_id);
+        glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer_id);
+    }
 
     // Unbind the framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -25,12 +28,18 @@ void Framebuffer::resize(unsigned int new_width, unsigned int new_height) {
     if (new_width == width && new_height == height) {
         return; // No need to resize
     }
+
+    if (use_renderbuffer) {
+        glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer_id);
+        glRenderbufferStorage(GL_RENDERBUFFER, renderbuffer_internal_format, new_width, new_height);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    } else {
+        if (depth_tex_id != 0)
+            assert("You are using texture as depth attachment and it has been initialized. However, your color attachments' size DONT matches.");
+    }
+
     width = new_width;
     height = new_height;
-
-    glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer_id);
-    glRenderbufferStorage(GL_RENDERBUFFER, renderbuffer_internal_format, width, height);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 void Framebuffer::setColorAttachment(std::shared_ptr<Texture2D> texture) {
@@ -78,23 +87,6 @@ void Framebuffer::setColorAttachment(std::vector<std::shared_ptr<Texture2D>>& te
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-// void Framebuffer::setColorAttachment(std::shared_ptr<Cubemap> texture) {
-//     glBindFramebuffer(GL_FRAMEBUFFER, id);
-//     if (texture->getWidth() != width || texture->getHeight() != height) {
-//         std::cerr << "Error: Texture size does not match framebuffer size."
-//                   << std::endl;
-//         return;
-//     }
-//     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture->getId(), 0);
-//     glDrawBuffer(GL_COLOR_ATTACHMENT0);
-//     // Check if framebuffer is complete
-//     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-//         std::cerr << "Error: Framebuffer is not complete!" << std::endl;
-//     }
-
-//     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-// }
-
 void Framebuffer::setColorAttachment(std::shared_ptr<Cubemap> texture, unsigned int face, unsigned int mip) {
     glBindFramebuffer(GL_FRAMEBUFFER, id);
 
@@ -117,5 +109,12 @@ void Framebuffer::setColorAttachment(std::shared_ptr<Cubemap> texture, unsigned 
         std::cerr << "Error: Framebuffer is not complete!" << std::endl;
     }
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Framebuffer::setDepthTexture(std::shared_ptr<Texture2D> depth_texture) {
+    depth_tex_id = depth_texture->getId();
+    glBindFramebuffer(GL_FRAMEBUFFER, id);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth_tex_id, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

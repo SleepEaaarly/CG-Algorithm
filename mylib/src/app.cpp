@@ -114,9 +114,15 @@ void App::initResource() {
 }
 
 void App::runPreRender() {
+    // logic update before rendering
+    for (auto obj : ResourceManager::getInstance().getAllGameObjects()) {
+        obj->update();
+    }
+
     for (auto pre_pass : ResourceManager::getInstance().getAllPreRenderPasses()) {
         glClearColor(0.f, 0.f, 0.f, 0.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        pre_pass->update();
         pre_pass->render();
     }
 }
@@ -140,14 +146,16 @@ void App::runRenderLoop() {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // update before rendering
+        // logic update before rendering
         for (auto obj : ResourceManager::getInstance().getAllGameObjects()) {
             obj->update();
         }
 
         // render all
         for (auto pass : ResourceManager::getInstance().getAllRenderPasses()) {
+            // render input update
             pass->update();
+            // render
             pass->render();
         }
 
