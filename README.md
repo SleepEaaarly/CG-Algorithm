@@ -6,11 +6,13 @@
 
 * SHLighting
 
+* Shadow: PCF
+
 TODO：
 
-* PCSS
+* Shadow: PCSS
+* Shadow: Cascaded Shadow Maps
 * Reflective Shadow Maps
-* Cascaded Shadow Maps
 * probes
 * lpv
 * vxgi
